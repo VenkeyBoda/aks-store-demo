@@ -12,13 +12,24 @@ pool:
 stages:
   - stage: build
     displayName: Docker Build
-
     jobs:
       - job: build
-        displayName: build and push docker image
+        displayName: Build and Push Docker Image
         steps:
-          - script: "docker image build -t venkeyboda/store-front:$(Build.BuildNumber) ./src/store-front"
-            displayName: "building image"
-          - script: "docker image push venkeyboda/store-front:$(Build.BuildNumber)"
-            displayName: "pushing image"
-            
+          - task: Docker@2
+            displayName: Build Docker Image
+            inputs:
+              repository: 'venkeyboda/store-front'
+              command: 'build'
+              Dockerfile: '**/store-front/Dockerfile'
+              tags: |
+                $(Build.BuildNumber)
+
+          - task: Docker@2
+            displayName: Push Docker Image
+            inputs:
+              containerRegistry: 'DOCKER_HUB'
+              repository: 'venkeyboda/store-front'
+              command: 'push'
+              tags: |
+                $(Build.BuildNumber)
