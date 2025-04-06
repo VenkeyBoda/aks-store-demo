@@ -1,0 +1,24 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: build
+    displayName: Docker Build
+
+    jobs:
+      - job: build
+        displayName: build and push docker image
+        steps:
+          - script: "docker image build -t venkeyboda/store-front:$(Build.BuildNumber) ./src/store-front"
+            displayName: "building image"
+          - script: "docker image push venkeyboda/store-front:$(Build.BuildNumber)"
+            displayName: "pushing image"
+            
