@@ -33,20 +33,21 @@ stages:
               tags: |
                 $(Build.BuildNumber)
 
-  # - stage: deploy
-  #   displayName: k8s deploy
-  #   jobs:
-  #     - job: dev-deployment
-  #       displayName: deploy into dev environment
-  #       steps:
-  #         - task: HelmDeploy@0
-  #           displayName: "Deploy into dev"
-  #           inputs:
-  #             connectionType: 'None'
-  #             namespace: 'dev'
-  #             command: 'upgrade'
-  #             chartType: 'FilePath'
-  #             chartPath: './charts/aks-store-demo'
-  #             releaseName: 'aks-store'
-  #             install: true
-  #             arguments: '--create-namespace --set storeFront.image.tag=$(Build.BuildNumber)'
+  - stage: deploy
+    displayName: k8s deploy
+    jobs:
+      - job: dev-deployment
+        displayName: deploy into dev environment
+        steps:
+          - task: HelmDeploy@0
+            displayName: "Deploy into dev"
+            inputs:
+              connectionType: 'None'
+              namespace: 'dev'
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: './charts/aks-store-demo'
+              releaseName: 'aks-store'
+              install: true
+              arguments: '--create-namespace --set storeFront.image.tag=$(Build.BuildNumber)'
+              
