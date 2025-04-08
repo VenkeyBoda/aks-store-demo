@@ -3,20 +3,25 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-pool: default
-
-pr:
+trigger:
   - main
+
+pool:
+  vmImage: ubuntu-latest
+
+# pr:
+#   - main
 
 stages:
   - stage: build
     displayName: Docker Build
     jobs:
       - job: build
-        displayName: Build and Push Docker Image
+        displayName: Build and Push Docker Images
         steps:
+          # Build store-front image
           - task: Docker@2
-            displayName: Build Docker Image
+            displayName: Build store-front Docker Image
             inputs:
               repository: 'venkeyboda/store-front'
               command: 'build'
@@ -24,8 +29,19 @@ stages:
               tags: |
                 $(Build.BuildNumber)
 
+          # Build aks-store-admin image
           - task: Docker@2
-            displayName: Push Docker Image
+            displayName: Build aks-store-admin Docker Image
+            inputs:
+              repository: 'venkeyboda/aks-store-admin'
+              command: 'build'
+              Dockerfile: '**/store-admin/Dockerfile'
+              tags: |
+                $(Build.BuildNumber)
+
+          # Push store-front image
+          - task: Docker@2
+            displayName: Push store-front Image
             inputs:
               containerRegistry: 'DOCKER_HUB'
               repository: 'venkeyboda/store-front'
@@ -33,21 +49,32 @@ stages:
               tags: |
                 $(Build.BuildNumber)
 
-  - stage: deploy
-    displayName: k8s deploy
-    jobs:
-      - job: deployment
-        displayName: deploy into dev environment
-        steps:
-          - task: HelmDeploy@0
-            displayName: "Deploy into dev"
+          # Push aks-store-admin image
+          - task: Docker@2
+            displayName: Push aks-store-admin Image
             inputs:
-              connectionType: 'None'
-              namespace: 'dev'
-              command: 'upgrade'
-              chartType: 'FilePath'
-              chartPath: './charts/aks-store-demo'
-              releaseName: 'aks-store'
-              install: true
-              arguments: '--create-namespace --set storeFront.image.tag=$(Build.BuildNumber)'
+              containerRegistry: 'DOCKER_HUB'
+              repository: 'venkeyboda/aks-store-admin'
+              command: 'push'
+              tags: |
+                $(Build.BuildNumber)
+
+
+  # - stage: deploy
+  #   displayName: k8s deploy
+  #   jobs:
+  #     - job: deployment
+  #       displayName: deploy into dev environment
+  #       steps:
+  #         - task: HelmDeploy@0
+  #           displayName: "Deploy into dev"
+  #           inputs:
+  #             connectionType: 'None'
+  #             namespace: 'dev'
+  #             command: 'upgrade'
+  #             chartType: 'FilePath'
+  #             chartPath: './charts/aks-store-demo'
+  #             releaseName: 'aks-store'
+  #             install: true
+  #             arguments: '--create-namespace --set storeFront.image.tag=$(Build.BuildNumber)'
               
