@@ -3,10 +3,10 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-- main
-
 pool: default
+
+pr:
+  - main
 
 stages:
   - stage: build
@@ -36,7 +36,7 @@ stages:
   - stage: deploy
     displayName: k8s deploy
     jobs:
-      - job: dev-deployment
+      - job: deployment
         displayName: deploy into dev environment
         steps:
           - task: HelmDeploy@0
