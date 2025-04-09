@@ -63,14 +63,14 @@ productService:
 
 storeAdmin:
   image:
-    repository: "ghcr.io/azure-samples/aks-store-demo/store-admin"
-    tag: "latest"
+    repository: "venkeyboda/aks-store-admin"
+    tag: "20250408.1"
   serviceType: LoadBalancer
 
 storeFront:
   image:
     repository: "venkeyboda/store-front"
-    tag: "20250406.3"
+    tag: "20250408.4"
   serviceType: LoadBalancer
 
 virtualCustomer:
