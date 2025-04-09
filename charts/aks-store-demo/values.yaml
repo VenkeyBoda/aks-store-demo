@@ -70,7 +70,7 @@ storeAdmin:
 storeFront:
   image:
     repository: "venkeyboda/store-front"
-    tag: "footer"
+    tag: "20250408.4"
   serviceType: LoadBalancer
 
 virtualCustomer:
